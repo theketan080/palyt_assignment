@@ -4,26 +4,23 @@ export function isDishAvailable(dish, stock) {
       (item) => item.name === recipeIngredient.name
     );
 
+    // Ingredient required by recipe but missing from stock
     if (!stockIngredient) {
       return false;
     }
 
-    return isAboveOrAtPar(stockIngredient);
+    const quantity = convertToBaseUnit(
+      stockIngredient.qty,
+      stockIngredient.unit
+    );
+
+    const par = convertToBaseUnit(
+      stockIngredient.par,
+      stockIngredient.unit
+    );
+
+    return quantity >= par;
   });
-}
-
-function isAboveOrAtPar(stockIngredient) {
-  const quantityInBaseUnit = convertToBaseUnit(
-    stockIngredient.qty,
-    stockIngredient.unit
-  );
-
-  const parInBaseUnit = convertToBaseUnit(
-    stockIngredient.par,
-    stockIngredient.unit
-  );
-
-  return quantityInBaseUnit >= parInBaseUnit;
 }
 
 function convertToBaseUnit(quantity, unit) {

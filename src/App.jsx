@@ -1,11 +1,14 @@
 import { useState } from "react";
 import stockData from "./data/stock.json";
+import recipesData from "./data/recipes.json";
+import { isDishAvailable } from "./logic/availability";
 
 function App() {
   const [stock, setStock] = useState(stockData);
   const [editingIngredient, setEditingIngredient] = useState(null);
   const [editQty, setEditQty] = useState("");
   const [editPar, setEditPar] = useState("");
+  const [recipes] = useState(recipesData);
 
   const handleEdit = (item) => {
     setEditingIngredient(item.name);
@@ -104,6 +107,26 @@ function App() {
           ))}
         </tbody>
       </table>
+      <hr/>
+      <h2>Menu</h2>
+
+<div>
+  {recipes.map((dish) => {
+    const available = isDishAvailable(dish, stock);
+
+    return (
+      <div key={dish.dish}>
+        <h3>{dish.dish}</h3>
+
+        <p>₹{dish.price}</p>
+
+        <p>
+          {available ? "AVAILABLE" : "UNAVAILABLE"}
+        </p>
+      </div>
+    );
+  })}
+</div>
     </div>
   );
 }
