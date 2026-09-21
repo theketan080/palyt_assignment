@@ -2,6 +2,7 @@ import { useState } from "react";
 import stockData from "./data/stock.json";
 import recipesData from "./data/recipes.json";
 import { isDishAvailable } from "./logic/availability";
+import { deductIngredients } from "./logic/deduction";
 
 function App() {
   const [stock, setStock] = useState(stockData);
@@ -37,6 +38,11 @@ function App() {
     setEditingIngredient(null);
   };
 
+  const handleOrder = (dish) => {
+    const updatedStock = deductIngredients(dish, stock);
+
+    setStock(updatedStock);
+  };
   return (
     <div>
       <h1>Kitchen Stock</h1>
@@ -63,8 +69,8 @@ function App() {
                       type="number"
                       value={editQty}
                       onChange={(e) => setEditQty(e.target.value)}
-                    />
-                    {" "}{item.unit}
+                    />{" "}
+                    {item.unit}
                   </td>
 
                   <td>
@@ -72,18 +78,14 @@ function App() {
                       type="number"
                       value={editPar}
                       onChange={(e) => setEditPar(e.target.value)}
-                    />
-                    {" "}{item.unit}
+                    />{" "}
+                    {item.unit}
                   </td>
 
                   <td>
-                    <button onClick={() => handleSave(item)}>
-                      Save
-                    </button>
+                    <button onClick={() => handleSave(item)}>Save</button>
 
-                    <button onClick={handleCancel}>
-                      Cancel
-                    </button>
+                    <button onClick={handleCancel}>Cancel</button>
                   </td>
                 </>
               ) : (
@@ -97,9 +99,7 @@ function App() {
                   </td>
 
                   <td>
-                    <button onClick={() => handleEdit(item)}>
-                      Edit
-                    </button>
+                    <button onClick={() => handleEdit(item)}>Edit</button>
                   </td>
                 </>
               )}
@@ -107,26 +107,27 @@ function App() {
           ))}
         </tbody>
       </table>
-      <hr/>
+      <hr />
       <h2>Menu</h2>
 
-<div>
-  {recipes.map((dish) => {
-    const available = isDishAvailable(dish, stock);
+      <div>
+        {recipes.map((dish) => {
+          const available = isDishAvailable(dish, stock);
 
-    return (
-      <div key={dish.dish}>
-        <h3>{dish.dish}</h3>
+          return (
+            <div key={dish.dish}>
+              <h3>{dish.dish}</h3>
 
-        <p>₹{dish.price}</p>
+              <p>₹{dish.price}</p>
 
-        <p>
-          {available ? "AVAILABLE" : "UNAVAILABLE"}
-        </p>
+              <p>{available ? "AVAILABLE" : "UNAVAILABLE"}</p>
+              {available && (
+                <button onClick={() => handleOrder(dish)}>Order</button>
+              )}
+            </div>
+          );
+        })}
       </div>
-    );
-  })}
-</div>
     </div>
   );
 }
